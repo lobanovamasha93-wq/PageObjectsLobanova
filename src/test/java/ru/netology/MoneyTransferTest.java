@@ -1,0 +1,50 @@
+package ru.netology;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static com.codeborne.selenide.Selenide.open;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class MoneyTransferTest {
+
+    @BeforeEach
+    void setup() {
+        open("http://localhost:9999");
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+        verificationPage.validVerify(verificationCode);
+    }
+
+    @Test
+    void shouldTransferMoneyBetweenOwnCards() {
+        var dashboardPage = new DashboardPage();
+
+        int balanceFirstBefore = dashboardPage.getCardBalance(0);
+        int balanceSecondBefore = dashboardPage.getCardBalance(1);
+        int amount = 500;
+
+        var transferPage = dashboardPage.selectCardToTransfer(0);
+        dashboardPage = transferPage.makeTransfer(String.valueOf(amount), DataHelper.getSecondCardInfo());
+
+        int balanceFirstAfter = dashboardPage.getCardBalance(0);
+        int balanceSecondAfter = dashboardPage.getCardBalance(1);
+
+        assertEquals(balanceFirstBefore + amount, balanceFirstAfter);
+        assertEquals(balanceSecondBefore - amount, balanceSecondAfter);
+    }
+
+    @Test
+    void shouldFindBugWhenTransferMoreThanBalance() {
+        var dashboardPage = new DashboardPage();
+
+        int balanceFirstBefore = dashboardPage.getCardBalance(0);
+        int balanceSecondBefore = dashboardPage.getCardBalance(1);
+        int amount = balanceSecondBefore + 1000;
+
+        var transferPage = dashboardPage.selectCardToTransfer(0);
+        transferPage.makeTransfer(String.valueOf(amount), DataHelper.getSecondCardInfo());
+    }
+}
