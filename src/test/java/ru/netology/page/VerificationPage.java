@@ -8,9 +8,9 @@ public class VerificationPage {
         $("[data-test-id=code] input").shouldBe(visible);
     }
 
-    public void validVerify(String verificationCode) {
-        $("[data-test-id=code] input").setValue(verificationCode);
-        $("[data-test-id=action-verify]").click();
-        new DashboardPage();
-    }
+ public DashboardPage validVerify(String verificationCode) {
+    $("[data-test-id=code] input").setValue(verificationCode);
+    $("[data-test-id=action-verify]").click();
+    return new DashboardPage();
+}
 }
