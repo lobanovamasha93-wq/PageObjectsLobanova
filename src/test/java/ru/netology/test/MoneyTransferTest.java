@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MoneyTransferTest {
 
+    private DashboardPage dashboardPage;
+
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
@@ -18,13 +20,11 @@ public class MoneyTransferTest {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor();
-        verificationPage.validVerify(verificationCode);
+        dashboardPage = verificationPage.validVerify(verificationCode);
     }
 
     @Test
     void shouldTransferMoneyBetweenOwnCards() {
-        var dashboardPage = new DashboardPage();
-
         int balanceFirstBefore = dashboardPage.getCardBalance(0);
         int balanceSecondBefore = dashboardPage.getCardBalance(1);
         int amount = 500;
@@ -41,7 +41,6 @@ public class MoneyTransferTest {
 
     @Test
     void shouldFindBugWhenTransferMoreThanBalance() {
-        var dashboardPage = new DashboardPage();
         int balanceSecondBefore = dashboardPage.getCardBalance(1);
         int amount = balanceSecondBefore + 6500;
         var transferPage = dashboardPage.selectCardToTransfer(0);
