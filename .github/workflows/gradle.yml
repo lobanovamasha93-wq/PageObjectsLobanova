@@ -27,10 +27,5 @@ jobs:
       - name: Start SUT
         run: java -jar ./artifacts/app-ibank-build-for-testers.jar -P:profile=test &
 
-      - name: Wait for SUT to be ready
-        run: |
-          timeout 30s bash -c 'until printf "" 2>>/dev/null >/dev/tcp/localhost/9999; do sleep 1; done'
-          echo "SUT is up and running!"
-
       - name: Run tests
         run: ./gradlew test -Dselenide.headless=true
